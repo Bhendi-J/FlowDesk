@@ -1,7 +1,8 @@
-
+from datetime import datetime,timezone
 from app.database import Base
-from sqlalchemy import func, ForeignKey
-from sqlalchemy.orm import Mapped, mapped_column
+from sqlalchemy import String, Integer, DateTime, func, ForeignKey
+from sqlalchemy.orm import Mapped, mapped_column, relationship
+
 
 
 class TaskDependency(Base):

@@ -6,7 +6,9 @@ from app.schemas.tasks import (
     TaskCreate,
     TaskRead,
     TaskUpdate
-)   
+)
+from app.models.projects import Project
+from app.models.users import User   
 
 router = APIRouter(
     prefix="/tasks",
@@ -18,13 +20,29 @@ def create_task(
     task_data: TaskCreate,
     db: DBsession
 ):
+    check_project = db.get(Project, task_data.project_id)
+    if not check_project:
+        raise HTTPException(
+            status_code=404,
+            detail="Project not found"
+        )
+
+    if task_data.assigned_user_id is not None:
+        check_user = db.get(User, task_data.assigned_user_id)
+        if not check_user:
+            raise HTTPException(
+                status_code=404,
+                detail="User not found"
+            )
+
     task = Task(
         title=task_data.title,
         description=task_data.description,
         status=task_data.status,
         priority=task_data.priority,
         project_id=task_data.project_id,
-        assigned_user_id=task_data.assigned_user_id
+        assigned_user_id=task_data.assigned_user_id,
+        duration_estimate=task_data.duration_estimate
     )
 
     db.add(task)
@@ -62,6 +80,7 @@ def update_task(
             status_code=404,
             detail="Task not found"
         )
+
 
     for key, value in update_data.items():
         setattr(task, key, value)

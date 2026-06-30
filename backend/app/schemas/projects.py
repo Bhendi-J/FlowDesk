@@ -24,5 +24,4 @@ class projectRead(projectBase):
 class projectUpdate(BaseModel):
     name: str | None = None
     description: str | None = None
-    workspace_id: int | None = None
     deadline: datetime | None = None

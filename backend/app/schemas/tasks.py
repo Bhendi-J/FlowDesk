@@ -27,6 +27,8 @@ class TaskBase(BaseModel):
 class TaskCreate(TaskBase):
     project_id: int
     assigned_user_id: int | None = None
+    duration_estimate: int #compulsary field for CPM calculations, must be provided when creating a task
+
 
 
 class TaskUpdate(BaseModel):
@@ -35,15 +37,14 @@ class TaskUpdate(BaseModel):
     status: TaskStatus | None = None
     priority: TaskPriority | None = None
     duration_estimate: int | None = None
-    project_id: int | None = None
-    assigned_user_id: int | None = None
 
 class TaskRead(TaskBase):
     id: int
     created_at: datetime
     project_id: int
     assigned_user_id: int | None = None
-    
+    duration_estimate: int
+
 
     model_config = {
         "from_attributes": True

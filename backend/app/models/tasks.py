@@ -72,8 +72,7 @@ class Task(Base):
     )
 
     duration_estimate: Mapped[int] = mapped_column(
-        Integer,
-        nullable=True
+        Integer
     )
 
     created_at: Mapped[datetime] = mapped_column(

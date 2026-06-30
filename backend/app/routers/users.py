@@ -1,3 +1,5 @@
+from sqlalchemy import select
+
 from fastapi import APIRouter, HTTPException, Depends
 from app.database import DBsession
 from app.models.users import User
@@ -30,6 +32,17 @@ def create_user(
 
     return user
 
+@router.get("/", response_model=list[UserRead])
+def read_users(
+    db:DBsession
+):
+    users = db.scalars(
+        select(User)
+    ).all()
+
+    return users
+
+    
 @router.get("/{user_id}", response_model=UserRead)
 def read_user(
     user_id:int,

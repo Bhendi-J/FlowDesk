@@ -8,6 +8,7 @@ from app.schemas.projects import (
     projectRead,
     projectUpdate
 )
+from app.models.workspaces import Workspace
 
 router = APIRouter(
     prefix="/projects",
@@ -19,6 +20,14 @@ def create_project(
     project_data: projectCreate,
     db: DBsession
 ):
+    
+    workspace = db.get(Workspace, project_data.workspace_id)
+    if not workspace:
+        raise HTTPException(
+            status_code=404,
+            detail="Workspace not found"
+        )
+    
     project = Project(
         name=project_data.name,
         description=project_data.description,
@@ -63,6 +72,7 @@ def update_project(
 ):
     update_data = project_data.model_dump(exclude_unset=True)
     project = db.get(Project, project_id)
+
 
     if project is None:
         raise HTTPException(

@@ -14,6 +14,7 @@ from app.routers.workspaces import router as workspace_router
 from app.routers.projects import router as project_router
 from app.routers.tasks import router as task_router
 from app.routers.dependencies import router as dependency_router
+from app.routers.cpm import router as cpm_router
 
 
 from app.database import create_tables
@@ -32,7 +33,7 @@ app.include_router(workspace_router)
 app.include_router(project_router)
 app.include_router(task_router)
 app.include_router(dependency_router)
-
+app.include_router(cpm_router)
 
 
 @app.get("/")
