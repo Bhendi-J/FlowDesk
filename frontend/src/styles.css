@@ -1,0 +1,260 @@
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background: #f6f7f9;
+  color: #1d2733;
+  font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+}
+
+button,
+select,
+input {
+  font: inherit;
+}
+
+.screen {
+  display: grid;
+  grid-template-columns: 320px 1fr;
+  min-height: 100vh;
+}
+
+.sidebar {
+  border-right: 1px solid #d8dde6;
+  background: #ffffff;
+  padding: 20px;
+  overflow: auto;
+}
+
+.brand {
+  color: #0f5132;
+  font-size: 22px;
+  font-weight: 800;
+  margin-bottom: 16px;
+}
+
+select {
+  width: 100%;
+  border: 1px solid #c6ceda;
+  border-radius: 6px;
+  padding: 9px 10px;
+  background: #ffffff;
+}
+
+.stat {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  margin: 18px 0;
+  padding: 14px 0;
+  border-block: 1px solid #e2e6ed;
+}
+
+.stat span {
+  color: #667085;
+  font-size: 13px;
+}
+
+.stat strong {
+  color: #b42318;
+  font-size: 28px;
+}
+
+.playbar {
+  display: grid;
+  grid-template-columns: repeat(3, 44px);
+  gap: 8px;
+  margin-bottom: 18px;
+}
+
+button {
+  display: grid;
+  place-items: center;
+  height: 38px;
+  border: 1px solid #c6ceda;
+  border-radius: 6px;
+  background: #ffffff;
+  cursor: pointer;
+}
+
+h2 {
+  margin: 18px 0 10px;
+  font-size: 13px;
+  text-transform: uppercase;
+  color: #667085;
+  letter-spacing: 0;
+}
+
+.slider-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 104px 24px;
+  align-items: center;
+  gap: 8px;
+  margin: 10px 0;
+  font-size: 13px;
+}
+
+.slider-row span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.workspace {
+  display: grid;
+  grid-template-rows: minmax(320px, 44vh) auto auto;
+  min-width: 0;
+}
+
+.graph-panel {
+  border-bottom: 1px solid #d8dde6;
+  background: #fbfcfd;
+}
+
+.react-flow__node {
+  border-radius: 8px;
+  border: 1px solid #ccd3dd;
+  background: #ffffff;
+  box-shadow: 0 4px 12px rgba(16, 24, 40, 0.08);
+}
+
+.react-flow__node.node-critical {
+  border-color: #c2410c;
+  background: #fff7ed;
+}
+
+.flow-node {
+  display: grid;
+  gap: 5px;
+  padding: 10px 12px;
+}
+
+.flow-node strong {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 14px;
+}
+
+.flow-node span {
+  color: #667085;
+  font-size: 12px;
+}
+
+.edge-critical path {
+  stroke: #c2410c;
+  stroke-width: 3;
+}
+
+.edge-normal path {
+  stroke: #98a2b3;
+}
+
+.timeline,
+.resources {
+  padding: 18px 24px;
+  overflow: auto;
+}
+
+.axis {
+  display: grid;
+  grid-template-columns: repeat(var(--ticks, 1), 1fr);
+  margin-left: 132px;
+  color: #667085;
+  font-size: 11px;
+}
+
+.task-line,
+.resource-row {
+  display: grid;
+  grid-template-columns: 120px minmax(360px, 1fr);
+  align-items: center;
+  gap: 12px;
+  min-height: 32px;
+}
+
+.task-label,
+.resource-row > span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 13px;
+}
+
+.bar-lane {
+  position: relative;
+  height: 24px;
+  border-bottom: 1px solid #edf0f4;
+}
+
+.bar {
+  position: absolute;
+  top: 5px;
+  height: 14px;
+  border-radius: 4px;
+}
+
+.bar.naive {
+  background: rgba(20, 112, 99, 0.18);
+}
+
+.bar.constrained {
+  background: #147063;
+  opacity: 0;
+  transform: scaleX(0.4);
+  transform-origin: left center;
+  transition: opacity 180ms ease, transform 180ms ease;
+}
+
+.task-line.is-visible .bar.constrained {
+  opacity: 1;
+  transform: scaleX(1);
+}
+
+.bar.constrained.delayed {
+  background: #c2410c;
+}
+
+.resource-strip {
+  display: grid;
+  grid-auto-flow: column;
+  grid-auto-columns: minmax(18px, 1fr);
+  gap: 2px;
+  min-height: 20px;
+}
+
+.resource-strip i {
+  display: block;
+  border-radius: 3px;
+}
+
+.resource-strip .cool {
+  background: #d7f3df;
+}
+
+.resource-strip .warm {
+  background: #ffd88a;
+}
+
+.resource-strip .hot {
+  background: #e86a5b;
+}
+
+.error,
+.status {
+  margin: 16px;
+  color: #b42318;
+}
+
+@media (max-width: 900px) {
+  .screen {
+    grid-template-columns: 1fr;
+  }
+
+  .sidebar {
+    border-right: 0;
+    border-bottom: 1px solid #d8dde6;
+  }
+}

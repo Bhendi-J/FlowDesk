@@ -94,7 +94,7 @@ alembic/versions/
 
 # node modules (if frontend)
 node_modules/
+frontend/dist/
 
 # Logs
 *.log
-

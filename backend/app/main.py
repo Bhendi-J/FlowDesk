@@ -1,12 +1,14 @@
 from contextlib import asynccontextmanager
 
 from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
 
 from app.models.users import User
 from app.models.workspaces import Workspace
 from app.models.projects import Project
 from app.models.tasks import Task
 from app.models.dependencies import TaskDependency
+from app.models.resources import Resource, TaskResourceRequirement
 
 
 from app.routers.users import router as user_router
@@ -15,6 +17,7 @@ from app.routers.projects import router as project_router
 from app.routers.tasks import router as task_router
 from app.routers.dependencies import router as dependency_router
 from app.routers.cpm import router as cpm_router
+from app.routers.schedule import router as schedule_router
 
 
 from app.database import create_tables
@@ -28,12 +31,21 @@ async def lifespan(app: FastAPI):
 
 app = FastAPI(lifespan=lifespan)
 
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["http://localhost:5173", "http://127.0.0.1:5173"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
 app.include_router(user_router)
 app.include_router(workspace_router)
 app.include_router(project_router)
 app.include_router(task_router)
 app.include_router(dependency_router)
 app.include_router(cpm_router)
+app.include_router(schedule_router)
 
 
 @app.get("/")
