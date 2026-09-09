@@ -75,9 +75,23 @@ class Task(Base):
         Integer
     )
 
+    duration_optimistic: Mapped[int] = mapped_column(
+        Integer,
+        nullable=True
+    )
+
+    duration_likely: Mapped[int] = mapped_column(
+        Integer,
+        nullable=True
+    )
+
+    duration_pessimistic: Mapped[int] = mapped_column(
+        Integer,
+        nullable=True
+    )
+
     created_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True),
         nullable=False,
         server_default=func.now()
     )
-

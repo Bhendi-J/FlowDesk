@@ -1,7 +1,7 @@
 from datetime import datetime
 from enum import Enum
 
-from pydantic import BaseModel
+from pydantic import BaseModel, Field, PositiveInt, field_validator
 
 
 class TaskStatus(str, Enum):
@@ -22,12 +22,27 @@ class TaskBase(BaseModel):
     status: TaskStatus = TaskStatus.pending
     priority: TaskPriority = TaskPriority.medium
     duration_estimate: int | None = None
+    duration_optimistic: int | None = None
+    duration_likely: int | None = None
+    duration_pessimistic: int | None = None
 
 
 class TaskCreate(TaskBase):
     project_id: int
     assigned_user_id: int | None = None
-    duration_estimate: int #compulsary field for CPM calculations, must be provided when creating a task
+    title: str = Field(min_length=1, max_length=100)
+    description: str | None = Field(default=None, max_length=255)
+    duration_estimate: PositiveInt
+    depends_on_task_ids: list[int] = Field(default_factory=list)
+    resource_requirements: dict[int, PositiveInt] = Field(default_factory=dict)
+
+    @field_validator("title")
+    @classmethod
+    def nonblank_title(cls, value):
+        value = value.strip()
+        if not value:
+            raise ValueError("Task title cannot be blank")
+        return value
 
 
 
@@ -37,6 +52,9 @@ class TaskUpdate(BaseModel):
     status: TaskStatus | None = None
     priority: TaskPriority | None = None
     duration_estimate: int | None = None
+    duration_optimistic: int | None = None
+    duration_likely: int | None = None
+    duration_pessimistic: int | None = None
 
 class TaskRead(TaskBase):
     id: int
@@ -44,9 +62,11 @@ class TaskRead(TaskBase):
     project_id: int
     assigned_user_id: int | None = None
     duration_estimate: int
+    duration_optimistic: int | None = None
+    duration_likely: int | None = None
+    duration_pessimistic: int | None = None
 
 
     model_config = {
         "from_attributes": True
     }
-

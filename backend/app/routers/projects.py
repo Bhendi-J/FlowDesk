@@ -51,11 +51,11 @@ def seed_example_projects(db: DBsession):
             "description": "Design, development, and QA contending for senior engineering time.",
             "resources": [("Senior engineer", 1), ("QA engineer", 1)],
             "tasks": [
-                ("Design", 3, []),
-                ("Backend dev", 5, ["Design"]),
-                ("Frontend dev", 4, ["Design"]),
-                ("QA", 3, ["Backend dev", "Frontend dev"]),
-                ("Release", 1, ["QA"]),
+                ("Design", 3, [], 2, 3, 5),
+                ("Backend dev", 5, ["Design"], 4, 5, 8),
+                ("Frontend dev", 4, ["Design"], 3, 4, 7),
+                ("QA", 3, ["Backend dev", "Frontend dev"], 2, 3, 6),
+                ("Release", 1, ["QA"], 1, 1, 2),
             ],
             "requirements": {
                 "Design": {"Senior engineer": 1},
@@ -70,12 +70,12 @@ def seed_example_projects(db: DBsession):
             "description": "A compact construction flow with crew contention in the middle.",
             "resources": [("Crew", 1), ("Inspector", 1)],
             "tasks": [
-                ("Foundation", 4, []),
-                ("Framing", 5, ["Foundation"]),
-                ("Electrical", 3, ["Framing"]),
-                ("Plumbing", 3, ["Framing"]),
-                ("Drywall", 4, ["Electrical", "Plumbing"]),
-                ("Inspection", 1, ["Drywall"]),
+                ("Foundation", 4, [], 3, 4, 7),
+                ("Framing", 5, ["Foundation"], 4, 5, 8),
+                ("Electrical", 3, ["Framing"], 2, 3, 5),
+                ("Plumbing", 3, ["Framing"], 2, 3, 5),
+                ("Drywall", 4, ["Electrical", "Plumbing"], 3, 4, 7),
+                ("Inspection", 1, ["Drywall"], 1, 1, 2),
             ],
             "requirements": {
                 "Foundation": {"Crew": 1},
@@ -91,11 +91,11 @@ def seed_example_projects(db: DBsession):
             "description": "Sequential stations sharing a constrained machine.",
             "resources": [("CNC machine", 1), ("Assembler", 1)],
             "tasks": [
-                ("Cut stock", 2, []),
-                ("Mill parts", 4, ["Cut stock"]),
-                ("Drill housings", 3, ["Cut stock"]),
-                ("Assemble", 3, ["Mill parts", "Drill housings"]),
-                ("Pack", 1, ["Assemble"]),
+                ("Cut stock", 2, [], 1, 2, 3),
+                ("Mill parts", 4, ["Cut stock"], 3, 4, 6),
+                ("Drill housings", 3, ["Cut stock"], 2, 3, 5),
+                ("Assemble", 3, ["Mill parts", "Drill housings"], 2, 3, 5),
+                ("Pack", 1, ["Assemble"], 1, 1, 2),
             ],
             "requirements": {
                 "Cut stock": {"CNC machine": 1},
@@ -116,6 +116,7 @@ def seed_example_projects(db: DBsession):
             )
         ).first()
         if project is not None:
+            _backfill_example_task_estimates(db, project, example)
             seeded.append({"id": project.id, "name": project.name})
             continue
 
@@ -139,18 +140,21 @@ def seed_example_projects(db: DBsession):
             resources_by_name[resource_name] = resource
 
         tasks_by_name = {}
-        for title, duration, _ in example["tasks"]:
+        for title, duration, _, optimistic, likely, pessimistic in example["tasks"]:
             task = Task(
                 project_id=project.id,
                 title=title,
                 description=None,
                 duration_estimate=duration,
+                duration_optimistic=optimistic,
+                duration_likely=likely,
+                duration_pessimistic=pessimistic,
             )
             db.add(task)
             db.flush()
             tasks_by_name[title] = task
 
-        for title, _, prerequisites in example["tasks"]:
+        for title, _, prerequisites, _, _, _ in example["tasks"]:
             for prerequisite in prerequisites:
                 db.add(
                     TaskDependency(
@@ -173,6 +177,20 @@ def seed_example_projects(db: DBsession):
 
     db.commit()
     return {"projects": seeded}
+
+
+def _backfill_example_task_estimates(db, project, example):
+    existing_tasks = {
+        task.title: task
+        for task in db.scalars(select(Task).where(Task.project_id == project.id)).all()
+    }
+    for title, _, _, optimistic, likely, pessimistic in example["tasks"]:
+        task = existing_tasks.get(title)
+        if task is None:
+            continue
+        task.duration_optimistic = optimistic
+        task.duration_likely = likely
+        task.duration_pessimistic = pessimistic
 
 @router.post("/", response_model=projectRead)
 def create_project(
