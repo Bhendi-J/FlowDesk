@@ -59,10 +59,18 @@ PYTHONPATH=backend uvicorn app.main:app --host 0.0.0.0 --port $PORT
 Backend deploy settings on Render:
 
 ```bash
+Root Directory: leave blank
 Build Command: pip install -r backend/requirements.txt
 Start Command: PYTHONPATH=backend uvicorn app.main:app --host 0.0.0.0 --port $PORT
 Environment Variable: DATABASE_URL=postgresql://USER:PASSWORD@HOST:PORT/DATABASE
 Environment Variable: ALLOWED_ORIGINS=https://your-netlify-site.netlify.app
+```
+
+If you set Render's Root Directory to `backend`, use this instead:
+
+```bash
+Build Command: pip install -r requirements.txt
+Start Command: uvicorn app.main:app --host 0.0.0.0 --port $PORT
 ```
 
 Frontend deploy settings on Netlify:
