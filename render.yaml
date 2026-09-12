@@ -1,0 +1,13 @@
+services:
+  - type: web
+    name: flowdesk-backend
+    runtime: python
+    buildCommand: pip install -r backend/requirements.txt
+    startCommand: PYTHONPATH=backend uvicorn app.main:app --host 0.0.0.0 --port $PORT
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.12.8
+      - key: DATABASE_URL
+        sync: false
+      - key: ALLOWED_ORIGINS
+        sync: false

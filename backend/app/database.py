@@ -1,18 +1,33 @@
+import os
 from typing import Annotated
 
 from fastapi import Depends
 from sqlalchemy import create_engine, inspect, text
 from sqlalchemy.orm import DeclarativeBase, Session
 
-DATABASE_URL = "sqlite:///./flowdesk.db"
+try:
+    from dotenv import load_dotenv
+except ImportError:
+    load_dotenv = None
 
-# Later:
-# DATABASE_URL = "postgresql+psycopg2://user:password@localhost/dbname"
+if load_dotenv:
+    load_dotenv()
+
+
+def _normalize_database_url(database_url: str) -> str:
+    if database_url.startswith("postgres://"):
+        return database_url.replace("postgres://", "postgresql+psycopg://", 1)
+    if database_url.startswith("postgresql://"):
+        return database_url.replace("postgresql://", "postgresql+psycopg://", 1)
+    return database_url
+
+
+DATABASE_URL = _normalize_database_url(os.getenv("DATABASE_URL", "sqlite:///./flowdesk.db"))
 
 class Base(DeclarativeBase):
     pass
 
-connect_args = {"check_same_thread": False}
+connect_args = {"check_same_thread": False} if DATABASE_URL.startswith("sqlite") else {}
 engine = create_engine(DATABASE_URL, connect_args=connect_args)
 
 

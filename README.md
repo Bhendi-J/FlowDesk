@@ -14,6 +14,66 @@ The project picker loads existing projects, seeding examples only when no projec
 
 Frontend calculation checks: `node --test frontend/src/schedule-utils.test.mjs`. Backend regression checks: `PYTHONPATH=backend .venv/bin/python -m pytest -q`.
 
+## Local environment
+
+The repo includes safe defaults in `.env.example` and `frontend/.env.example`.
+Local `.env` files are ignored by git.
+
+```bash
+cp .env.example .env
+cp frontend/.env.example frontend/.env
+```
+
+Backend configuration:
+
+```bash
+DATABASE_URL=sqlite:///./flowdesk.db
+ALLOWED_ORIGINS=http://localhost:5173,http://127.0.0.1:5173
+```
+
+Frontend configuration:
+
+```bash
+VITE_API_BASE=http://127.0.0.1:8000
+```
+
+## Deployment
+
+Use Postgres for production. MongoDB URLs will not work with this SQLAlchemy
+schema without rewriting the data layer.
+
+Backend env vars:
+
+```bash
+DATABASE_URL=postgresql://USER:PASSWORD@HOST:PORT/DATABASE
+ALLOWED_ORIGINS=https://your-netlify-site.netlify.app
+```
+
+Backend build/run settings for a normal Python web service:
+
+```bash
+pip install -r backend/requirements.txt
+PYTHONPATH=backend uvicorn app.main:app --host 0.0.0.0 --port $PORT
+```
+
+Backend deploy settings on Render:
+
+```bash
+Build Command: pip install -r backend/requirements.txt
+Start Command: PYTHONPATH=backend uvicorn app.main:app --host 0.0.0.0 --port $PORT
+Environment Variable: DATABASE_URL=postgresql://USER:PASSWORD@HOST:PORT/DATABASE
+Environment Variable: ALLOWED_ORIGINS=https://your-netlify-site.netlify.app
+```
+
+Frontend deploy settings on Netlify:
+
+```bash
+Base Directory: frontend
+Build Command: npm run build
+Publish Directory: dist
+Environment Variable: VITE_API_BASE=https://your-backend.example.com
+```
+
 To seed the local examples:
 
 ```bash
