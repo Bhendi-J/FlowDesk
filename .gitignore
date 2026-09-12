@@ -49,6 +49,11 @@ pnpm-debug.log*
 !.env.example
 !*.env.example
 
+# Local notes / scratch files
+FLOWDESK_INTERVIEW_GUIDE.md
+*_INTERVIEW_GUIDE.md
+practice.py
+
 # Local databases
 *.sqlite3
 *.sqlite
